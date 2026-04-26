@@ -14,28 +14,41 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) {
-        Hero hero1 = new Hero("Aragorn", 100, 20, 5);
-        Hero hero2 = new Hero("Legolas", 80, 25, 3);
+            Hero hero1 = new Hero("Aragorn", 100, 20, 5);
+            Hero hero2 = new Hero("Legolas", 80, 25, 3);
 
-        hero2.setState(new PoisonedState(3));
+            hero1.setState(new StunnedState(1));
+            hero2.setState(new PoisonedState(3));
 
-        List<Hero> party = Arrays.asList(hero1, hero2);
+            List<Hero> party = Arrays.asList(hero1, hero2);
 
-        List<TowerFloor> floors = Arrays.asList(
-                new CombatFloor(),
-                new TrapFloor(),
-                new RestFloor(),
-                new BossFloor()
-        );
+            List<TowerFloor> firstFloors = Arrays.asList(
+                    new CombatFloor(),
+                    new TrapFloor(),
+                    new RestFloor()
+            );
 
-        TowerRunner runner = new TowerRunner(floors);
+            TowerRunner firstRunner = new TowerRunner(firstFloors);
+            TowerRunResult firstResult = firstRunner.run(party);
 
-        TowerRunResult result = runner.run(party);
+            if (firstResult.getHeroesSurviving() > 0) {
+                hero1.setState(new BerserkState());
 
-        System.out.println("\n=== FINAL RESULT ===");
-        System.out.println("Floors cleared: " + result.getFloorsCleared());
-        System.out.println("Heroes alive: " + result.getHeroesSurviving());
-        System.out.println("Reached top: " + result.isReachedTop());
+                List<TowerFloor> finalFloor = Arrays.asList(
+                        new BossFloor()
+                );
 
+                TowerRunner bossRunner = new TowerRunner(finalFloor);
+                TowerRunResult bossResult = bossRunner.run(party);
+
+                int totalFloorsCleared = firstResult.getFloorsCleared() + bossResult.getFloorsCleared();
+                int heroesAlive = bossResult.getHeroesSurviving();
+                boolean reachedTop = totalFloorsCleared == 4;
+
+                System.out.println("\n=== FINAL RESULT ===");
+                System.out.println("Floors cleared: " + totalFloorsCleared);
+                System.out.println("Heroes alive: " + heroesAlive);
+                System.out.println("Reached top: " + reachedTop);
+            }
          }
 }
